@@ -5,9 +5,11 @@ import { useNavigate } from 'react-router-dom'
 
 const Home = () => {
     const {articles, deleteArticle} = useDjango()
-    // console.log(articles)
+    console.log(articles)
 
     const navigate = useNavigate();
+
+
 
   return (
     <>
@@ -15,8 +17,10 @@ const Home = () => {
             <div key={article.id}>
                 <h1>{article.title}</h1>
                 <p>{article.content}</p>
+                <p>Created at: {article.created_at}</p>
                 <button className='btn btn-primary' onClick={() => navigate(`/update/${article.id}`)}  >Update</button>
                 <button className='btn btn-danger' onClick={() => deleteArticle(article.id)}>Delete</button>
+                <hr className='my-4'/>
             </div>
         ))}
 

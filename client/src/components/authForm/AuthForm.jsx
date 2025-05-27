@@ -1,30 +1,46 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useDjango } from '../../context/DjangoContext';
+// import { useCookies } from 'react-cookie';
+import { useNavigate } from 'react-router-dom';
+
 
 function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [email, setEmail] = useState('');
+  // const [token,setToken] = useCookies(['tokenCookie']);
+  const navigate = useNavigate();
+
+  const { loginUser, registerUser,tokenCookie,setTokenCookie } = useDjango();
+
+
+  useEffect(() => {
+    if (tokenCookie.tokenCookie) {
+      navigate('/');
+    }
+  }, [tokenCookie, navigate]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const endpoint = isLogin ? '/api/token/' : '/api/register/';
-    const payload = { username, password };
 
     try {
-      const res = await axios.post(`http://localhost:8000${endpoint}`, payload);
-
       if (isLogin) {
-        localStorage.setItem('access_token', res.data.access);
-        localStorage.setItem('refresh_token', res.data.refresh);
-        setMessage('Login successful!');
+        const response = await loginUser({ username,email, password });
+        setTokenCookie('tokenCookie', response.token);
+        setMessage(response.message);
       } else {
-        setMessage('Registration successful. You can log in now.');
-        setIsLogin(true);
+        const response = await registerUser({ username,email, password });
+
+        setTokenCookie('tokenCookie', response.token);
+        setMessage(response.message);
+        
       }
-    } catch (err) {
-      setMessage('Error: ' + (err.response?.data?.detail || 'Something went wrong'));
+    } catch (error) {
+      console.error(error);
+      setMessage('An error occurred. Please try again.');
     }
   };
 
@@ -35,6 +51,10 @@ function AuthForm() {
         <input
           type="text" value={username} placeholder="Username"
           onChange={(e) => setUsername(e.target.value)} required
+        />
+        <input
+          type="email" value={email} placeholder="Email"
+          onChange={(e) => setEmail(e.target.value)} 
         />
         <input
           type="password" value={password} placeholder="Password"
@@ -50,4 +70,4 @@ function AuthForm() {
   );
 }
 
-export default AuthForm;
+export default AuthForm

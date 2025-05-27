@@ -27,16 +27,22 @@ const UpdateArticle = () => {
     if (!article) return <p>Loading...</p>;
 
     return (
-        <div>
+        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <h1>Update Article</h1>
+            <h4>Title</h4>
             <input
+                
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
             />
-            <input
-                type="text"
+            <h4>Content</h4>
+            <textarea
+                // type="text"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
+                rows={10}
+                cols={50}
             />
             
             <button
@@ -44,6 +50,7 @@ const UpdateArticle = () => {
                     await updateArticle(article.id, { title, content });
                     navigate('/');
                 }}
+                className='btn btn-primary'
             >
                 Update
             </button>
