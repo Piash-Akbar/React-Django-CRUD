@@ -4,9 +4,11 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
 class ArticleSerializer(serializers.ModelSerializer):
+    author = serializers.StringRelatedField(read_only=True) 
     class Meta:
         model = Article
-        fields = '__all__'
+        fields = ['id', 'title', 'content', 'created_at', 'updated_at', 'author']
+        read_only_fields = ['author']
 
     def create(self, validated_data):
         return Article.objects.create(**validated_data)
